@@ -48,7 +48,7 @@ depend:
 	@touch makefile.dep
 	@-rm makefile.dep
 	@echo Creating dependencies.
-	@for i in *.c; do $(CC) $(INC) -MM $(INC_PARAMS) $$i; done > makefile.dep
+	@for i in *.c; do $(CC) -MM $(SDL_CFLAGS) $$i; done > makefile.dep
 	@echo Done.
 
 clean:
