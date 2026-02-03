@@ -58,3 +58,9 @@ gf2d
 *.log
 
 makefile.dep
+
+libs/*.a
+libs/*.so*
+libs/*.dylib
+src/*.o
+src/makefile.dep

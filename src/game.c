@@ -3,6 +3,7 @@
 
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
+#include "entity.h"
 
 int main(int argc, char * argv[])
 {
@@ -30,9 +31,12 @@ int main(int argc, char * argv[])
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
     SDL_ShowCursor(SDL_DISABLE);
+
+    /*Entitities*/
+    entity_system_init(1024);
     
     /*demo setup*/
-    sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
+    sprite = gf2d_sprite_load_image("images/backgrounds/castle.png");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     slog("press [escape] to quit");
     /*main game loop*/
