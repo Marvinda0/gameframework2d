@@ -69,7 +69,7 @@ Entity *entity_new()
         memset(&_entity_manager.entity_list[i],0,sizeof(Entity));
         _entity_manager.entity_list[i]._inuse = 1;
         _entity_manager.entity_list[i].color = GFC_COLOR_WHITE;
-        //_entity_manager.entity_list[i].scale = 1;
+        _entity_manager.entity_list[i].scale = gfc_vector2d(1,1);
         return &_entity_manager.entity_list[i];
     }
     slog("No available entities found");

@@ -34,7 +34,9 @@ int main(int argc, char * argv[])
 
     /*Entitities*/
     entity_system_init(1024);
-    
+    Entity* test = entity_new();
+    test->position=gfc_vector2d(0,0);
+    test->sprite=gf2d_sprite_load_image("images/roy2.png");
     /*demo setup*/
     sprite = gf2d_sprite_load_image("images/backgrounds/castle.png");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
@@ -48,11 +50,17 @@ int main(int argc, char * argv[])
         SDL_GetMouseState(&mx,&my);
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
+
+        entity_system_think();
+        entity_system_update();
         
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first
             gf2d_sprite_draw_image(sprite,gfc_vector2d(0,0));
+
+            // Entities
+            entity_system_draw();
             
             //UI elements last
             gf2d_sprite_draw(
