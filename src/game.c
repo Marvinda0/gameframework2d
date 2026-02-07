@@ -1,9 +1,13 @@
 #include <SDL.h>
 #include "simple_logger.h"
 
+#include "gfc_input.h"
+
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
 #include "entity.h"
+#include "player.h"
+#include "monster.h"
 
 int main(int argc, char * argv[])
 {
@@ -19,7 +23,8 @@ int main(int argc, char * argv[])
     
     /*program initializtion*/
     init_logger("gf2d.log",0);
-    slog("---==== BEGIN ====---");
+    slog("---==== BEGIN manolo ====---");
+    gfc_input_init("/Users/jesusgarcia/Documents/git/gameframework2d/gfc/sample_config/input.cfg");
     gf2d_graphics_initialize(
         "gf2d",
         1200,
@@ -34,12 +39,18 @@ int main(int argc, char * argv[])
 
     /*Entitities*/
     entity_system_init(1024);
-    Entity* test = entity_new();
-    test->position=gfc_vector2d(0,0);
-    test->sprite=gf2d_sprite_load_image("images/roy2.png");
+    //Entity* test = entity_new();
+    //test->position=gfc_vector2d(600,360);
+    //test->sprite=gf2d_sprite_load_image("images/roy2.png");
     /*demo setup*/
+    Entity *Player = player_new();
+    int i;
     sprite = gf2d_sprite_load_image("images/backgrounds/castle.png");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
+    for(i=0;i<=50;i++)
+    {
+        monster_new(Player);
+    }
     slog("press [escape] to quit");
     /*main game loop*/
     while(!done)
@@ -50,7 +61,6 @@ int main(int argc, char * argv[])
         SDL_GetMouseState(&mx,&my);
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
-
         entity_system_think();
         entity_system_update();
         
@@ -60,7 +70,10 @@ int main(int argc, char * argv[])
             gf2d_sprite_draw_image(sprite,gfc_vector2d(0,0));
 
             // Entities
+            entity_system_think();
+            entity_system_update();
             entity_system_draw();
+            
             
             //UI elements last
             gf2d_sprite_draw(

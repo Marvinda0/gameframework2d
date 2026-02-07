@@ -11,7 +11,8 @@ typedef struct Entity_S
     Uint8 _inuse;
     GFC_TextLine name;
     GFC_Vector2D position;
-    GFC_Vector2D rotation;
+    GFC_Vector2D velocity;
+    float rotation;
     GFC_Vector2D scale;
     GFC_Color color;
     Sprite *sprite;

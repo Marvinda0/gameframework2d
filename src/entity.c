@@ -121,7 +121,11 @@ void entity_system_update()
 
 void entity_draw(Entity *self)
 {
-    if(!self)return;
+    if(!self)
+    {
+        slog("cannot draw a NULL sprite");
+        return;
+    }
     if (self->sprite)
     {
         gf2d_sprite_render(
@@ -129,13 +133,13 @@ void entity_draw(Entity *self)
             self->position,
             NULL,
             NULL,
-            NULL,
+            &self->rotation,
             NULL,
             NULL,
             NULL,
             (Uint32)self->frame);
     }
-    slog("cannot draw a NULL sprite");
+    
 }
 
 void entity_system_draw()
