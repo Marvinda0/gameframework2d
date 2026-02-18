@@ -7,6 +7,8 @@ typedef struct
 {
     int HP;
     Entity *target;
+    float lifetime;      // how long before it despawns
+    float time_alive;    // how long it's been alive
 }MonsterData; 
 
 /*

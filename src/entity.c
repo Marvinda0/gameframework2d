@@ -68,6 +68,7 @@ Entity *entity_new()
         if(_entity_manager.entity_list[i]._inuse)continue;
         memset(&_entity_manager.entity_list[i],0,sizeof(Entity));
         _entity_manager.entity_list[i]._inuse = 1;
+        _entity_manager.entity_list[i]._delete_me = 0;  
         _entity_manager.entity_list[i].color = GFC_COLOR_WHITE;
         _entity_manager.entity_list[i].scale = gfc_vector2d(1,1);
         return &_entity_manager.entity_list[i];
@@ -84,7 +85,8 @@ void entity_free(Entity *self)
         return;
     }
     gf2d_sprite_free(self->sprite);
-    if(self->free)self->free(self->data);
+    if(self->free)self->free(self);
+    memset(self, 0, sizeof(Entity));
 }
 
 void entity_think(Entity *self)
@@ -117,6 +119,14 @@ void entity_system_update()
         if(!_entity_manager.entity_list[i]._inuse)continue;
         entity_update(&_entity_manager.entity_list[i]);
     }
+
+    for(i=0; i<_entity_manager.max_entities; i++)
+    {
+        if(_entity_manager.entity_list[i]._delete_me)
+        {
+            entity_free(&_entity_manager.entity_list[i]);
+        }
+    }
 }
 
 void entity_draw(Entity *self)
@@ -128,11 +138,16 @@ void entity_draw(Entity *self)
     }
     if (self->sprite)
     {
+        GFC_Vector2D center = gfc_vector2d(
+            self->sprite->frame_w / 2.0,
+            self->sprite->frame_h / 2.0
+        );
+
         gf2d_sprite_render(
             self->sprite,
             self->position,
             NULL,
-            NULL,
+            &center,
             &self->rotation,
             NULL,
             NULL,

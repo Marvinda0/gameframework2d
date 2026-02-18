@@ -10,6 +10,8 @@ void monster_free(Entity *self);
 void monster_init_data(MonsterData *data, Entity *target)
 {
     data->target = target;
+    data->lifetime = 3.0;
+    data->time_alive = 0;
 }
 
 Entity *monster_new(Entity *target)
@@ -25,6 +27,7 @@ Entity *monster_new(Entity *target)
     self->frame = 0;
     self->position = gfc_vector2d((gfc_random()*2 *600) - 600, (gfc_random()*2 *360) -360);
     self->rotation = 0;
+    self->velocity = gfc_vector2d(0,0);
     self->think = monster_think;
     self->update = monster_update;
     self->free = monster_free;
@@ -39,7 +42,6 @@ void monster_think(Entity *self)
 {
     MonsterData *data;
     float dx, dy;
-    GFC_Vector2D difference;
     if(!self)return; 
     
     data = (MonsterData*)self->data;
@@ -48,18 +50,37 @@ void monster_think(Entity *self)
     dy = data->target->position.y - self->position.y;
 
     float angle = atan2(dy,dx);
-    self->rotation = angle;
+    self->rotation = angle * (180.0 / 3.14159);
 }
 
 void monster_update(Entity *self)
 {
+    MonsterData *data;
+
     if(!self)return;
     self ->frame += 0.05;
     if (self->frame >= 16) self->frame = 0;
 
+    data = (MonsterData*)self->data;
+    if (data)
+    {
+        data->time_alive += 0.1;  // ~16ms per frame
+        
+        if (data->time_alive >= data->lifetime)
+        {
+            slog("Monster despawning after %.2f seconds", data->time_alive);
+            self->_delete_me = 1;
+        }
+    }
 }
 
 void monster_free(Entity *self)
 {
     if(!self)return;
+
+    if(self->data)
+    {
+        free(self->data);
+        self->data = NULL;
+    }
 }

@@ -9,6 +9,7 @@
 typedef struct Entity_S
 {
     Uint8 _inuse;
+     Uint8 _delete_me;
     GFC_TextLine name;
     GFC_Vector2D position;
     GFC_Vector2D velocity;

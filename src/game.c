@@ -47,7 +47,8 @@ int main(int argc, char * argv[])
     int i;
     sprite = gf2d_sprite_load_image("images/backgrounds/castle.png");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
-    for(i=0;i<=50;i++)
+    float spawn_timer = 0;
+    for(i=0;i<=5;i++)
     {
         monster_new(Player);
     }
@@ -61,15 +62,20 @@ int main(int argc, char * argv[])
         SDL_GetMouseState(&mx,&my);
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
-        entity_system_think();
-        entity_system_update();
         
+        spawn_timer += 0.1;
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first
             gf2d_sprite_draw_image(sprite,gfc_vector2d(0,0));
-
+            
             // Entities
+            if (spawn_timer >= 4.0)  // every 2 seconds
+            {
+                spawn_timer = 0;
+                monster_new(Player);  // spawn one
+                slog("Monster spawned");
+            }     
             entity_system_think();
             entity_system_update();
             entity_system_draw();
