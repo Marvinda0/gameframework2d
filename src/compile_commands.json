@@ -1,0 +1,145 @@
+[
+  {
+    "file": "entity.c",
+    "arguments": [
+      "gcc",
+      "-MM",
+      "-I/opt/homebrew/include/SDL2",
+      "-D_THREAD_SAFE",
+      "-I../include",
+      "-I../gfc/include",
+      "-I../gfc/simple_logger/include",
+      "-I../gfc/simple_json/include",
+      "entity.c"
+    ],
+    "directory": "/Users/jesusgarcia/Documents/git/gameframework2d/src"
+  },
+  {
+    "file": "game.c",
+    "arguments": [
+      "gcc",
+      "-MM",
+      "-I/opt/homebrew/include/SDL2",
+      "-D_THREAD_SAFE",
+      "-I../include",
+      "-I../gfc/include",
+      "-I../gfc/simple_logger/include",
+      "-I../gfc/simple_json/include",
+      "game.c"
+    ],
+    "directory": "/Users/jesusgarcia/Documents/git/gameframework2d/src"
+  },
+  {
+    "file": "gf2d_draw.c",
+    "arguments": [
+      "gcc",
+      "-MM",
+      "-I/opt/homebrew/include/SDL2",
+      "-D_THREAD_SAFE",
+      "-I../include",
+      "-I../gfc/include",
+      "-I../gfc/simple_logger/include",
+      "-I../gfc/simple_json/include",
+      "gf2d_draw.c"
+    ],
+    "directory": "/Users/jesusgarcia/Documents/git/gameframework2d/src"
+  },
+  {
+    "file": "gf2d_graphics.c",
+    "arguments": [
+      "gcc",
+      "-MM",
+      "-I/opt/homebrew/include/SDL2",
+      "-D_THREAD_SAFE",
+      "-I../include",
+      "-I../gfc/include",
+      "-I../gfc/simple_logger/include",
+      "-I../gfc/simple_json/include",
+      "gf2d_graphics.c"
+    ],
+    "directory": "/Users/jesusgarcia/Documents/git/gameframework2d/src"
+  },
+  {
+    "file": "gf2d_sprite.c",
+    "arguments": [
+      "gcc",
+      "-MM",
+      "-I/opt/homebrew/include/SDL2",
+      "-D_THREAD_SAFE",
+      "-I../include",
+      "-I../gfc/include",
+      "-I../gfc/simple_logger/include",
+      "-I../gfc/simple_json/include",
+      "gf2d_sprite.c"
+    ],
+    "directory": "/Users/jesusgarcia/Documents/git/gameframework2d/src"
+  },
+  {
+    "file": "level.c",
+    "arguments": [
+      "gcc",
+      "-MM",
+      "-I/opt/homebrew/include/SDL2",
+      "-D_THREAD_SAFE",
+      "-I../include",
+      "-I../gfc/include",
+      "-I../gfc/simple_logger/include",
+      "-I../gfc/simple_json/include",
+      "level.c"
+    ],
+    "directory": "/Users/jesusgarcia/Documents/git/gameframework2d/src"
+  },
+  {
+    "file": "monster.c",
+    "arguments": [
+      "gcc",
+      "-MM",
+      "-I/opt/homebrew/include/SDL2",
+      "-D_THREAD_SAFE",
+      "-I../include",
+      "-I../gfc/include",
+      "-I../gfc/simple_logger/include",
+      "-I../gfc/simple_json/include",
+      "monster.c"
+    ],
+    "directory": "/Users/jesusgarcia/Documents/git/gameframework2d/src"
+  },
+  {
+    "file": "player.c",
+    "arguments": [
+      "gcc",
+      "-MM",
+      "-I/opt/homebrew/include/SDL2",
+      "-D_THREAD_SAFE",
+      "-I../include",
+      "-I../gfc/include",
+      "-I../gfc/simple_logger/include",
+      "-I../gfc/simple_json/include",
+      "player.c"
+    ],
+    "directory": "/Users/jesusgarcia/Documents/git/gameframework2d/src"
+  },
+  {
+    "file": "level.c",
+    "arguments": [
+      "gcc",
+      "-g",
+      "-fPIC",
+      "-Wall",
+      "-pedantic",
+      "-std=gnu99",
+      "-fgnu89-inline",
+      "-Wno-unknown-pragmas",
+      "-Wno-variadic-macros",
+      "-I/opt/homebrew/include/SDL2",
+      "-D_THREAD_SAFE",
+      "-I../include",
+      "-I../gfc/include",
+      "-I../gfc/simple_logger/include",
+      "-I../gfc/simple_json/include",
+      "-c",
+      "level.c"
+    ],
+    "directory": "/Users/jesusgarcia/Documents/git/gameframework2d/src"
+  }
+]

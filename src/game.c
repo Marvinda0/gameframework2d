@@ -8,13 +8,15 @@
 #include "entity.h"
 #include "player.h"
 #include "monster.h"
+#include "level.h"
 
 int main(int argc, char * argv[])
 {
     /*variable declarations*/
     int done = 0;
     const Uint8 * keys;
-    Sprite *sprite;
+    Entity *Player;
+    Level *level;
     
     int mx,my;
     float mf = 0;
@@ -43,9 +45,9 @@ int main(int argc, char * argv[])
     //test->position=gfc_vector2d(600,360);
     //test->sprite=gf2d_sprite_load_image("images/roy2.png");
     /*demo setup*/
-    Entity *Player = player_new();
+    Player = player_new();
+    level = level_test_new();
     int i;
-    sprite = gf2d_sprite_load_image("images/backgrounds/castle.png");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     float spawn_timer = 0;
     for(i=0;i<=5;i++)
@@ -66,20 +68,19 @@ int main(int argc, char * argv[])
         spawn_timer += 0.1;
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
-            //backgrounds drawn first
-            gf2d_sprite_draw_image(sprite,gfc_vector2d(0,0));
-            
+            //backgrounds drawn first            
             // Entities
             if (spawn_timer >= 4.0)  // every 2 seconds
             {
                 spawn_timer = 0;
                 monster_new(Player);  // spawn one
-                slog("Monster spawned");
+                //slog("Monster spawned");
             }     
+            level_draw(level);
             entity_system_think();
             entity_system_update();
             entity_system_draw();
-            
+
             
             //UI elements last
             gf2d_sprite_draw(
@@ -97,6 +98,7 @@ int main(int argc, char * argv[])
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
+    level_free(level);
     slog("---==== END ====---");
     return 0;
 }

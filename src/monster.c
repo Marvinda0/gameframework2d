@@ -16,6 +16,10 @@ void monster_init_data(MonsterData *data, Entity *target)
 
 Entity *monster_new(Entity *target)
 {
+    GFC_Vector2D offset = gfc_vector2d(
+    (gfc_random() * 2 * 600) - 600,
+    (gfc_random() * 2 * 360) - 360
+    );
     Entity *self;
     self = entity_new();
      if(!self)
@@ -25,8 +29,7 @@ Entity *monster_new(Entity *target)
     }
     self->sprite = gf2d_sprite_load_all("images/space_bug_top.png", 128, 128, 17, 0);
     self->frame = 0;
-    self->position = gfc_vector2d((gfc_random()*2 *600) - 600, (gfc_random()*2 *360) -360);
-    self->rotation = 0;
+    gfc_vector2d_add(self->position, target->position, offset);    self->rotation = 0;
     self->velocity = gfc_vector2d(0,0);
     self->think = monster_think;
     self->update = monster_update;
@@ -64,11 +67,11 @@ void monster_update(Entity *self)
     data = (MonsterData*)self->data;
     if (data)
     {
-        data->time_alive += 0.1;  // ~16ms per frame
+        data->time_alive += 0.02;  // ~16ms per frame
         
         if (data->time_alive >= data->lifetime)
         {
-            slog("Monster despawning after %.2f seconds", data->time_alive);
+            //slog("Monster despawning after %.2f seconds", data->time_alive);
             self->_delete_me = 1;
         }
     }
