@@ -4,12 +4,13 @@
 #include <SDL.h>
 #include "gf2d_sprite.h"
 #include "gfc_types.h"
+#include "level.h"
 
 
 typedef struct Entity_S
 {
     Uint8 _inuse;
-     Uint8 _delete_me;
+    Uint8 _delete_me;
     GFC_TextLine name;
     GFC_Vector2D position;
     GFC_Vector2D velocity;
@@ -18,6 +19,16 @@ typedef struct Entity_S
     GFC_Color color;
     Sprite *sprite;
     float frame;
+
+    // combat
+    int health;
+    int max_health;
+    int damage;             // contact/projectile damage dealt
+    int invincible_frames;  // i-frame countdown (ticks down each frame)
+    Uint8 faction;          // 0 = player/friendly, 1 = enemy
+    Uint8 is_projectile;    // despawns on hitting opposite faction entity
+    float hit_radius;       // collision circle radius in pixels
+
 	void (*think)(struct Entity_S* self);
 	void (*update)(struct Entity_S *self);
 	void (*free)(struct Entity_S* self);
@@ -61,5 +72,17 @@ void entity_system_update();
 * @brief run the draw functions of all the entities 
 */
 void entity_system_draw();
+
+/*
+@brief checks 4 points around entity, pushes back out of walls undoing movement actions before draw call
+@param self entity to chekc collisions with environment
+@param Level current game world 
+*/
+void entity_resolve_tile_collision(Entity *self, Level *level);
+
+/*
+@brief check all active entities against each other, apply damage on faction mismatch, despawn projectiles on hit
+*/
+void entity_system_check_collisions();
 
 #endif

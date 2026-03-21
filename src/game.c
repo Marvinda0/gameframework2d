@@ -8,6 +8,7 @@
 #include "entity.h"
 #include "player.h"
 #include "monster.h"
+#include "projectile.h"
 #include "level.h"
 #include "camera.h"
 
@@ -26,7 +27,7 @@ int main(int argc, char * argv[])
     
     /*program initializtion*/
     init_logger("gf2d.log",0);
-    slog("---==== BEGIN manolo ====---");
+    slog("---==== BEGIN manumps ====---");
     gfc_input_init("/Users/jesusgarcia/Documents/git/gameframework2d/gfc/sample_config/input.cfg");
     gf2d_graphics_initialize(
         "gf2d",
@@ -48,12 +49,17 @@ int main(int argc, char * argv[])
     //test->sprite=gf2d_sprite_load_image("images/roy2.png");
     /*demo setup*/
     Player = player_new();
+
+    //LEVEL
     level = level_test_new();
+    gCurrentLevel = level;
     level_setup_camera(level);
+    
+    
+    //TEST ENEMIES
     int i;
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
-    float spawn_timer = 0;
-    for(i=0;i<=5;i++)
+    for(i=0;i<2;i++)
     {
         monster_new(Player);
     }
@@ -68,20 +74,14 @@ int main(int argc, char * argv[])
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
         
-        spawn_timer += 0.1;
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first            
             // Entities
-            if (spawn_timer >= 4.0)  // every 2 seconds
-            {
-                spawn_timer = 0;
-                monster_new(Player);  // spawn one
-                //slog("Monster spawned");
-            }     
             level_draw(level);
             entity_system_think();
             entity_system_update();
+            entity_system_check_collisions();
             entity_system_draw();
 
             

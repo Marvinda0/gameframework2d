@@ -2,6 +2,7 @@
 
 #include "monster.h"
 #include "gfc_input.h"
+#include "level.h"
 
 void monster_think(Entity *self);
 void monster_update(Entity *self);
@@ -10,7 +11,7 @@ void monster_free(Entity *self);
 void monster_init_data(MonsterData *data, Entity *target)
 {
     data->target = target;
-    data->lifetime = 3.0;
+    data->lifetime = 5.0;
     data->time_alive = 0;
 }
 
@@ -38,6 +39,13 @@ Entity *monster_new(Entity *target)
     if(!self->data)slog("error");
     monster_init_data((MonsterData*)self->data, target);
 
+    // combat stats
+    self->health = 30;
+    self->max_health = 30;
+    self->damage = 10;
+    self->faction = 1;
+    self->hit_radius = 48.0f;
+
     return self;
 }
 
@@ -54,6 +62,11 @@ void monster_think(Entity *self)
 
     float angle = atan2(dy,dx);
     self->rotation = angle * (180.0 / 3.14159);
+
+    // move toward player
+    GFC_Vector2D dir = gfc_vector2d(dx, dy);
+    gfc_vector2d_normalize(&dir);
+    gfc_vector2d_scale(self->velocity, dir, 1.0f);
 }
 
 void monster_update(Entity *self)
@@ -61,13 +74,17 @@ void monster_update(Entity *self)
     MonsterData *data;
 
     if(!self)return;
-    self ->frame += 0.05;
+    self->frame += 0.05;
     if (self->frame >= 16) self->frame = 0;
+
+    // move and collide with walls
+    gfc_vector2d_add(self->position, self->position, self->velocity);
+    entity_resolve_tile_collision(self, gCurrentLevel);
 
     data = (MonsterData*)self->data;
     if (data)
     {
-        data->time_alive += 0.02;  // ~16ms per frame
+        data->time_alive += 0.001;  // ~16ms per frame
         
         if (data->time_alive >= data->lifetime)
         {

@@ -16,6 +16,8 @@ typedef struct
 
 }Level ;
 
+extern Level *gCurrentLevel; //Global level pointer to handle collisions
+
 Level *level_test_new();
 
 /*
@@ -69,5 +71,12 @@ void level_draw(Level *level);
 */
 void level_setup_camera(Level *level);
 
+/*
+@brief given world position x,y 
+@param level we are working with
+@param x and y coordinates we looking for the tile
+@return 1 if solid tile, 0 if walkable
+*/
+int level_get_tile_at(Level *level, float x, float y);
 
 #endif

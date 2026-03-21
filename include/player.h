@@ -17,9 +17,9 @@ typedef struct
     float crit;
     float lifesteal;
     float knockback;
+    
     void (*abilities[4])(Entity *self);
     float cooldowns[4];
-    
 } PlayerData;
 
 

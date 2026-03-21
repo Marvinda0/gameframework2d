@@ -7,6 +7,8 @@
 #include "level.h"
 #include "camera.h"
 
+Level *gCurrentLevel = NULL;
+
 void world_tile_layer_build(Level *level)
 {
     int i,j;
@@ -189,5 +191,20 @@ void level_setup_camera(Level *level)
     camera_set_bounds(gfc_rect(0,0,level->tileLayer->surface->w,level->tileLayer->surface->h));
     camera_apply_bounds();
     camera_enable_binding(1);
+}
+
+int level_get_tile_at(Level *level, float x, float y)
+{
+    int tx, ty, index;
+    if(!level) return 0;
+
+    //get tile column/row
+    tx = (int)(x / level->tileSet->frame_w);
+    ty = (int)(y / level->tileSet->frame_h);
+    // out of bounds counts as solid wall
+    if(tx < 0 || ty < 0 || tx >= level->width || ty >= level->height) return 1;
+    // convert 2d tile coords to 1d array index
+    index = tx + (ty * level->width);
+    return level->tileMap[index];
 }
 

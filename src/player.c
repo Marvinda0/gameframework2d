@@ -3,6 +3,7 @@
 #include "player.h"
 #include "gfc_input.h"
 #include "camera.h"
+#include "level.h"
 
 void player_think(Entity *self);
 void player_update(Entity *self);
@@ -25,6 +26,13 @@ Entity *player_new()
     self->update = player_update;
     self->free = player_free;
 
+    // combat stats
+    self->health = 100;
+    self->max_health = 100;
+    self->damage = 0;  // player deals no contact damage, only via projectiles
+    self->faction = 0;
+    self->hit_radius = 48.0f;
+
     return self;
 }
 
@@ -45,11 +53,11 @@ void player_think(Entity *self)
     }
     if (keys[SDL_SCANCODE_UP])
     {
-        my -= 0.1;
+        my += 0.1;
     }
     if (keys[SDL_SCANCODE_DOWN])
     {
-        my += 0.1;
+        my -= 0.1;
     }
     move = gfc_vector2d(mx,my);
     gfc_vector2d_normalize(&move);
@@ -62,6 +70,7 @@ void player_update(Entity *self)
     self ->frame += 0.1;
     if (self->frame >= 16) self->frame = 0;
     gfc_vector2d_add(self->position,self->position,self->velocity);
+    entity_resolve_tile_collision(self, gCurrentLevel);
     camera_center_on(self->position);
 
 }

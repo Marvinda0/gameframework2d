@@ -2,6 +2,8 @@
 
 #include "entity.h"
 #include "camera.h"
+#include "level.h"
+#include "gf2d_draw.h"
 
 
 typedef struct 
@@ -149,7 +151,7 @@ void entity_draw(Entity *self)
 
         gf2d_sprite_render(
             self->sprite,
-            self->position,
+            pos,
             NULL,
             &center,
             &self->rotation,
@@ -157,6 +159,12 @@ void entity_draw(Entity *self)
             NULL,
             NULL,
             (Uint32)self->frame);
+    }
+
+    // debug hitbox
+    if(self->hit_radius > 0)
+    {
+        gf2d_draw_circle(pos, (int)self->hit_radius, gfc_color(1,0,0,1));
     }
     
 }
@@ -170,4 +178,72 @@ void entity_system_draw()
         entity_draw(&_entity_manager.entity_list[i]);
     }
 }
-/*eof@eof*/
+
+void entity_resolve_tile_collision(Entity *self, Level *level)
+{
+    if(!self || !level) return;
+    float r = 40; // close to half of 128px sprite size
+
+    // only check the side we are moving toward to avoid double pushback
+    if(self->velocity.x > 0 && level_get_tile_at(level, self->position.x + r, self->position.y))
+        self->position.x -= self->velocity.x;
+    else if(self->velocity.x < 0 && level_get_tile_at(level, self->position.x - r, self->position.y))
+        self->position.x -= self->velocity.x;
+
+    if(self->velocity.y > 0 && level_get_tile_at(level, self->position.x, self->position.y + r))
+        self->position.y -= self->velocity.y;
+    else if(self->velocity.y < 0 && level_get_tile_at(level, self->position.x, self->position.y - r))
+        self->position.y -= self->velocity.y;
+}
+void entity_system_check_collisions()
+{
+    int i, j;
+    Entity *a, *b;
+    float dist;
+
+    // check all pairs
+    for(i = 0; i < (int)_entity_manager.max_entities - 1; i++)
+    {
+        a = &_entity_manager.entity_list[i];
+        if(!a->_inuse || a->_delete_me) continue;
+
+        for(j = i + 1; j < (int)_entity_manager.max_entities; j++)
+        {
+            b = &_entity_manager.entity_list[j];
+            if(!b->_inuse || b->_delete_me) continue;
+
+            // only interact across factions
+            if(a->faction == b->faction) continue;
+
+            dist = gfc_vector2d_magnitude_between(a->position, b->position);
+            if(dist > (a->hit_radius + b->hit_radius)) continue;
+
+            // apply damage to a from b
+            if(a->invincible_frames <= 0 && b->damage > 0)
+            {
+                a->health -= b->damage;
+                a->invincible_frames = 30; // ~0.5s at 60fps
+                if(a->health <= 0) a->_delete_me = 1;
+            }
+            // apply damage to b from a
+            if(b->invincible_frames <= 0 && a->damage > 0)
+            {
+                b->health -= a->damage;
+                b->invincible_frames = 30;
+                if(b->health <= 0) b->_delete_me = 1;
+            }
+
+            // projectiles despawn on contact
+            if(a->is_projectile) a->_delete_me = 1;
+            if(b->is_projectile) b->_delete_me = 1;
+        }
+    }
+
+    // tick down invincibility frames
+    for(i = 0; i < (int)_entity_manager.max_entities; i++)
+    {
+        if(!_entity_manager.entity_list[i]._inuse) continue;
+        if(_entity_manager.entity_list[i].invincible_frames > 0)
+            _entity_manager.entity_list[i].invincible_frames--;
+    }
+}/*eof@eof*/
