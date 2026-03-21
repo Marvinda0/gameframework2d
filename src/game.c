@@ -9,6 +9,7 @@
 #include "player.h"
 #include "monster.h"
 #include "level.h"
+#include "camera.h"
 
 int main(int argc, char * argv[])
 {
@@ -38,6 +39,7 @@ int main(int argc, char * argv[])
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
     SDL_ShowCursor(SDL_DISABLE);
+    camera_set_size(gfc_vector2d(1200,720));
 
     /*Entitities*/
     entity_system_init(1024);
@@ -47,6 +49,7 @@ int main(int argc, char * argv[])
     /*demo setup*/
     Player = player_new();
     level = level_test_new();
+    level_setup_camera(level);
     int i;
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     float spawn_timer = 0;

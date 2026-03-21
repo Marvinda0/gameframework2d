@@ -2,6 +2,7 @@
 
 #include "player.h"
 #include "gfc_input.h"
+#include "camera.h"
 
 void player_think(Entity *self);
 void player_update(Entity *self);
@@ -61,6 +62,7 @@ void player_update(Entity *self)
     self ->frame += 0.1;
     if (self->frame >= 16) self->frame = 0;
     gfc_vector2d_add(self->position,self->position,self->velocity);
+    camera_center_on(self->position);
 
 }
 void player_free(Entity *self)

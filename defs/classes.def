@@ -1,0 +1,53 @@
+{
+        "classes":[
+            {
+                "name":"knight",
+                "displayName":"Knight",
+                "health":100,
+                "damage":1.0,
+                "ms":1.0,
+                "armor":10,
+                "attack_area_size":1.0,
+                "lifesteal":0,
+                "crit":0.0,
+                "crit_dmg":1.50,
+                "attack_speed":1.0,
+                "kncockback":1.0,
+                "abilities": ["sword_attack", "shield_bash", "charge"],
+                "cooldowns": [1,1,1]
+            },
+            {
+                "name":"wizard",
+                "displayName":"Wizard of the West",
+                "health":80,
+                "damage":1.0,
+                "ms":1.15,
+                "armor":3,
+                "attack_area_size":1.0,
+                "lifesteal":0,
+                "crit":0.0,
+                "crit_dmg":1.50,
+                "attack_speed":1.0,
+                "knockback":1.0,
+                "abilities": ["blink", "blizzard", "ice_lance", "fire_blast"],
+                "cooldowns": [1,1,1,1]
+
+            },
+            {
+                "name":"ranger",
+                "displayName":"Ranger",
+                "health":80,
+                "damage":1.0,
+                "ms":1.3,
+                "armor":6,
+                "attack_area_size":1.0,
+                "lifesteal":0,
+                "crit":0.0,
+                "crit_dmg":1.50,
+                "attack_speed":1.0,
+                "knockback":1.0,
+                "abilities": ["shot", "barrage", "roll"],
+                "cooldowns": [1,1,1]
+            }
+        ]
+}

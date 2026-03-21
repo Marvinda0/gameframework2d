@@ -63,4 +63,11 @@ void level_free(Level *level);
 */
 void level_draw(Level *level);
 
+/*
+@brief setup level camera
+@param level to setup camera 
+*/
+void level_setup_camera(Level *level);
+
+
 #endif

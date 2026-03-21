@@ -2,8 +2,10 @@
 
 #include <SDL.h>
 
-#include "level.h"
 #include "gf2d_graphics.h"
+
+#include "level.h"
+#include "camera.h"
 
 void world_tile_layer_build(Level *level)
 {
@@ -169,12 +171,23 @@ void level_free(Level *level)
 
 void level_draw(Level *level)
 {
+    GFC_Vector2D offset;
+    offset = camera_get_offset();
     if(!level)
     {
         slog("no world to draw");
         return;
     }
     gf2d_sprite_draw_image(level->background,gfc_vector2d(0,0));
-    gf2d_sprite_draw_image(level->tileLayer ,gfc_vector2d(0,0));
+    gf2d_sprite_draw_image(level->tileLayer , offset);
+}
+
+void level_setup_camera(Level *level)
+{
+    if(!level)return;
+    if(!level->tileLayer || !level->tileLayer->surface)return;
+    camera_set_bounds(gfc_rect(0,0,level->tileLayer->surface->w,level->tileLayer->surface->h));
+    camera_apply_bounds();
+    camera_enable_binding(1);
 }
 

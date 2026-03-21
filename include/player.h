@@ -2,11 +2,25 @@
 #define __PLAYER_H__
 
 #include "entity.h"
+#include "gfc_text.h"
 
 typedef struct
 {
-    int HP;
-}Player;
+    GFC_TextLine className;
+    float health;
+    float max_health;
+    float damage;
+    float ms;
+    float armor;
+    float attack_area_size;
+    float attack_speed;
+    float crit;
+    float lifesteal;
+    float knockback;
+    void (*abilities[4])(Entity *self);
+    float cooldowns[4];
+    
+} PlayerData;
 
 
 /*

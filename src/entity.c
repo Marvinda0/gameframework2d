@@ -1,6 +1,7 @@
 #include "simple_logger.h"
 
 #include "entity.h"
+#include "camera.h"
 
 
 typedef struct 
@@ -136,6 +137,9 @@ void entity_draw(Entity *self)
         slog("cannot draw a NULL sprite");
         return;
     }
+    GFC_Vector2D offset, pos;
+    offset = camera_get_offset();
+    gfc_vector2d_add(pos,self->position,offset);
     if (self->sprite)
     {
         GFC_Vector2D center = gfc_vector2d(
