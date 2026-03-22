@@ -21,6 +21,14 @@ extern Level *gCurrentLevel; //Global level pointer to handle collisions
 Level *level_test_new();
 
 /*
+@brief load a named level from a def file
+@param filename path to the levels def e.g. "defs/levels.def"
+@param level_name the "name" key to look up inside the file
+@return NULL on error or a ready-to-draw Level
+*/
+Level *level_load(const char *filename, const char *level_name);
+
+/*
 * @brief Create the level given the parameters for each level
 * @param tileSet 
 * @param tileWidth

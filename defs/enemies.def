@@ -1,0 +1,69 @@
+{
+    "enemies": [
+        {
+            "name": "basic_melee",
+            "sprite": "images/space_bug_top.png",
+            "sprite_w": 128,
+            "sprite_h": 128,
+            "sprite_frames": 17,
+            "health": 30,
+            "damage": 10,
+            "speed": 1.0,
+            "hit_radius": 48.0,
+            "lifetime": 30.0,
+            "behavior": "melee"
+        },
+        {
+            "name": "basic_ranged",
+            "sprite": "images/space_bug_top.png",
+            "sprite_w": 128,
+            "sprite_h": 128,
+            "sprite_frames": 17,
+            "health": 20,
+            "damage": 8,
+            "speed": 0.6,
+            "hit_radius": 48.0,
+            "lifetime": 30.0,
+            "behavior": "ranged"
+        },
+        {
+            "name": "charger",
+            "sprite": "images/space_bug_top.png",
+            "sprite_w": 128,
+            "sprite_h": 128,
+            "sprite_frames": 17,
+            "health": 80,
+            "damage": 25,
+            "speed": 0.4,
+            "hit_radius": 48.0,
+            "lifetime": 30.0,
+            "behavior": "charger"
+        },
+        {
+            "name": "caster",
+            "sprite": "images/space_bug_top.png",
+            "sprite_w": 128,
+            "sprite_h": 128,
+            "sprite_frames": 17,
+            "health": 20,
+            "damage": 15,
+            "speed": 0.4,
+            "hit_radius": 48.0,
+            "lifetime": 30.0,
+            "behavior": "caster"
+        },
+        {
+            "name": "miniboss",
+            "sprite": "images/space_bug_top.png",
+            "sprite_w": 128,
+            "sprite_h": 128,
+            "sprite_frames": 17,
+            "health": 300,
+            "damage": 30,
+            "speed": 0.8,
+            "hit_radius": 64.0,
+            "lifetime": 120.0,
+            "behavior": "melee"
+        }
+    ]
+}

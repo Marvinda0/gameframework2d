@@ -9,6 +9,7 @@
 #include "player.h"
 #include "monster.h"
 #include "projectile.h"
+#include "defs.h"
 #include "level.h"
 #include "camera.h"
 
@@ -44,14 +45,13 @@ int main(int argc, char * argv[])
 
     /*Entitities*/
     entity_system_init(1024);
-    //Entity* test = entity_new();
-    //test->position=gfc_vector2d(600,360);
-    //test->sprite=gf2d_sprite_load_image("images/roy2.png");
     /*demo setup*/
+    defs_load_all(); // load enemies.def and abilities.def
     Player = player_new();
 
     //LEVEL
-    level = level_test_new();
+    level = level_load("defs/levels.def", "dungeon_1");
+    if(!level) level = level_test_new(); // fallback
     gCurrentLevel = level;
     level_setup_camera(level);
     
@@ -61,7 +61,7 @@ int main(int argc, char * argv[])
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     for(i=0;i<2;i++)
     {
-        monster_new(Player);
+        monster_new(Player, "basic_melee");
     }
     slog("press [escape] to quit");
     /*main game loop*/

@@ -1,9 +1,11 @@
 #include "simple_logger.h"
 
 #include <SDL.h>
+#include <string.h>
 
 #include "gf2d_graphics.h"
 
+#include "simple_json.h"
 #include "level.h"
 #include "camera.h"
 
@@ -206,5 +208,90 @@ int level_get_tile_at(Level *level, float x, float y)
     // convert 2d tile coords to 1d array index
     index = tx + (ty * level->width);
     return level->tileMap[index];
+}
+
+Level *level_load(const char *filename, const char *level_name)
+{
+    SJson *json, *list, *item, *val;
+    Level *level;
+    const char *str;
+    int i, j, count;
+    int width = 75, height = 45, tile_w = 16, tile_h = 16, border_only = 0;
+    char background[128] = {0};
+    char tileset[128]    = {0};
+
+    if(!filename || !level_name) return NULL;
+
+    json = sj_load(filename);
+    if(!json){ slog("level_load: could not open %s", filename); return NULL; }
+
+    list = sj_object_get_value(json, "levels");
+    if(!list){ sj_free(json); return NULL; }
+
+    // find the level entry by name
+    item = NULL;
+    count = sj_array_get_count(list);
+    for(i = 0; i < count; i++)
+    {
+        SJson *entry = sj_array_get_nth(list, i);
+        const char *n = sj_object_get_value_as_string(entry, "name");
+        if(n && strcmp(n, level_name) == 0){ item = entry; break; }
+    }
+    if(!item){ slog("level_load: level '%s' not found in %s", level_name, filename); sj_free(json); return NULL; }
+
+    // read fields
+    sj_object_get_value_as_int(item, "width",       &width);
+    sj_object_get_value_as_int(item, "height",      &height);
+    sj_object_get_value_as_int(item, "tile_w",      &tile_w);
+    sj_object_get_value_as_int(item, "tile_h",      &tile_h);
+    sj_object_get_value_as_int(item, "border_only", &border_only);
+
+    str = sj_object_get_value_as_string(item, "background");
+    if(str) strncpy(background, str, sizeof(background) - 1);
+
+    str = sj_object_get_value_as_string(item, "tileset");
+    if(str) strncpy(tileset, str, sizeof(tileset) - 1);
+
+    level = level_new(width, height);
+    if(!level){ sj_free(json); return NULL; }
+
+    if(background[0]) level->background = gf2d_sprite_load_image(background);
+    if(tileset[0])
+        level->tileSet = gf2d_sprite_load_all(tileset, tile_w, tile_h, 1, 1);
+
+    if(border_only)
+    {
+        // generate border walls, leave interior empty
+        for(i = 0; i < width; i++)
+        {
+            level->tileMap[i]                      = 1; // top row
+            level->tileMap[i + (height-1) * width] = 1; // bottom row
+        }
+        for(j = 0; j < height; j++)
+        {
+            level->tileMap[j * width]               = 1; // left col
+            level->tileMap[j * width + (width - 1)] = 1; // right col
+        }
+    }
+    else
+    {
+        // load tile array from JSON
+        val = sj_object_get_value(item, "tiles");
+        if(val)
+        {
+            int tile_count = sj_array_get_count(val);
+            for(i = 0; i < tile_count && i < width * height; i++)
+            {
+                int t = 0;
+                sj_get_integer_value(sj_array_get_nth(val, i), &t);
+                level->tileMap[i] = (Uint8)t;
+            }
+        }
+    }
+
+    world_tile_layer_build(level);
+    sj_free(json);
+    slog("level_load: loaded '%s' (%dx%d)", level_name, width, height);
+    return level;
 }
 

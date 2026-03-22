@@ -1,6 +1,7 @@
 #include "simple_logger.h"
 
 #include "monster.h"
+#include "defs.h"
 #include "gfc_input.h"
 #include "level.h"
 
@@ -10,41 +11,67 @@ void monster_free(Entity *self);
 
 void monster_init_data(MonsterData *data, Entity *target)
 {
-    data->target = target;
-    data->lifetime = 5.0;
+    data->target     = target;
+    data->lifetime   = 30.0f;
     data->time_alive = 0;
+    data->speed      = 1.0f; // default, overridden by def
 }
 
-Entity *monster_new(Entity *target)
+Entity *monster_new(Entity *target, const char *type)
 {
+    EnemyDef *def;
     GFC_Vector2D offset = gfc_vector2d(
-    (gfc_random() * 2 * 600) - 600,
-    (gfc_random() * 2 * 360) - 360
+        (gfc_random() * 2 * 600) - 600,
+        (gfc_random() * 2 * 360) - 360
     );
     Entity *self;
     self = entity_new();
-     if(!self)
+    if(!self)
     {
         slog("Error at Monster Entity Initialization");
         return NULL;
     }
-    self->sprite = gf2d_sprite_load_all("images/space_bug_top.png", 128, 128, 17, 0);
+
+    // load stats from def, fall back to defaults if not found
+    def = defs_get_enemy(type);
+
+    if(def)
+    {
+        self->sprite = gf2d_sprite_load_all(def->sprite, def->sprite_w, def->sprite_h, def->sprite_frames, 0);
+        self->health     = def->health;
+        self->max_health = def->health;
+        self->damage     = def->damage;
+        self->hit_radius = def->hit_radius;
+    }
+    else
+    {
+        // fallback so the game doesn't crash on a bad type name
+        self->sprite = gf2d_sprite_load_all("images/space_bug_top.png", 128, 128, 17, 0);
+        self->health = self->max_health = 30;
+        self->damage     = 10;
+        self->hit_radius = 48.0f;
+    }
+
     self->frame = 0;
-    gfc_vector2d_add(self->position, target->position, offset);    self->rotation = 0;
+    gfc_vector2d_add(self->position, target->position, offset);
+    self->rotation = 0;
     self->velocity = gfc_vector2d(0,0);
-    self->think = monster_think;
+    self->faction  = 1;
+
+    self->think  = monster_think;
     self->update = monster_update;
-    self->free = monster_free;
-    self->data = gfc_allocate_array(sizeof(MonsterData),1);
-    if(!self->data)slog("error");
+    self->free   = monster_free;
+
+    self->data = gfc_allocate_array(sizeof(MonsterData), 1);
+    if(!self->data) slog("error allocating monster data");
     monster_init_data((MonsterData*)self->data, target);
 
-    // combat stats
-    self->health = 30;
-    self->max_health = 30;
-    self->damage = 10;
-    self->faction = 1;
-    self->hit_radius = 48.0f;
+    // lifetime and speed from def
+    if(def)
+    {
+        ((MonsterData*)self->data)->lifetime = def->lifetime;
+        ((MonsterData*)self->data)->speed    = def->speed;
+    }
 
     return self;
 }
@@ -66,7 +93,7 @@ void monster_think(Entity *self)
     // move toward player
     GFC_Vector2D dir = gfc_vector2d(dx, dy);
     gfc_vector2d_normalize(&dir);
-    gfc_vector2d_scale(self->velocity, dir, 1.0f);
+    gfc_vector2d_scale(self->velocity, dir, data->speed);
 }
 
 void monster_update(Entity *self)
