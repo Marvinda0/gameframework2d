@@ -64,3 +64,6 @@ libs/*.so*
 libs/*.dylib
 src/*.o
 src/makefile.dep
+
+# developer documentation (local only, not part of the build)
+docs/

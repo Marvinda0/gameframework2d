@@ -3,7 +3,7 @@
             {
                 "name":"knight",
                 "displayName":"Knight",
-                "health":100,
+                "health":1400,
                 "damage":1.0,
                 "ms":1.0,
                 "armor":10,
@@ -12,7 +12,7 @@
                 "crit":0.0,
                 "crit_dmg":1.50,
                 "attack_speed":1.0,
-                "kncockback":1.0,
+                "knockback":1.0,
                 "abilities": ["sword_attack", "shield_bash", "charge"],
                 "cooldowns": [1,1,1]
             },
@@ -29,7 +29,7 @@
                 "crit_dmg":1.50,
                 "attack_speed":1.0,
                 "knockback":1.0,
-                "abilities": ["blink", "blizzard", "ice_lance", "fire_blast"],
+                "abilities": ["ice_lance", "fire_blast", "blink", "blizzard"],
                 "cooldowns": [1,1,1,1]
 
             },
@@ -46,7 +46,7 @@
                 "crit_dmg":1.50,
                 "attack_speed":1.0,
                 "knockback":1.0,
-                "abilities": ["shot", "barrage", "roll"],
+                "abilities": ["arrow_shot", "barrage", "roll"],
                 "cooldowns": [1,1,1]
             }
         ]

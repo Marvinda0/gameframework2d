@@ -8,10 +8,11 @@
             "sprite_frames": 17,
             "health": 30,
             "damage": 10,
-            "speed": 1.0,
-            "hit_radius": 48.0,
+            "hit_radius": 12.0,
             "lifetime": 30.0,
-            "behavior": "melee"
+            "behavior": "melee",
+            "speed": 3.5,
+            "color": "red"
         },
         {
             "name": "basic_ranged",
@@ -21,10 +22,11 @@
             "sprite_frames": 17,
             "health": 20,
             "damage": 8,
-            "speed": 0.6,
-            "hit_radius": 48.0,
+            "hit_radius": 24.0,
             "lifetime": 30.0,
-            "behavior": "ranged"
+            "behavior": "ranged",
+            "speed": 2.5,
+            "color": "lightblue"
         },
         {
             "name": "charger",
@@ -34,10 +36,11 @@
             "sprite_frames": 17,
             "health": 80,
             "damage": 25,
-            "speed": 0.4,
-            "hit_radius": 48.0,
+            "hit_radius": 24.0,
             "lifetime": 30.0,
-            "behavior": "charger"
+            "behavior": "charger",
+            "speed": 1.5,
+            "color": "orange"
         },
         {
             "name": "caster",
@@ -47,10 +50,11 @@
             "sprite_frames": 17,
             "health": 20,
             "damage": 15,
-            "speed": 0.4,
-            "hit_radius": 48.0,
+            "hit_radius": 24.0,
             "lifetime": 30.0,
-            "behavior": "caster"
+            "behavior": "caster",
+            "speed": 2.0,
+            "color": "purple"
         },
         {
             "name": "miniboss",
@@ -60,10 +64,25 @@
             "sprite_frames": 17,
             "health": 300,
             "damage": 30,
-            "speed": 0.8,
-            "hit_radius": 64.0,
+            "hit_radius": 18.0,
             "lifetime": 120.0,
-            "behavior": "melee"
+            "behavior": "melee",
+            "speed": 2.5,
+            "color": "darkgrey"
+        },
+        {
+            "name": "spinner",
+            "sprite": "images/space_bug_top.png",
+            "sprite_w": 128,
+            "sprite_h": 128,
+            "sprite_frames": 17,
+            "health": 40,
+            "damage": 0,
+            "hit_radius": 24.0,
+            "lifetime": 60.0,
+            "behavior": "spinner",
+            "speed": 2.5,
+            "color": "cyan"
         }
     ]
 }

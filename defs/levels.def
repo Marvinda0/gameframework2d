@@ -2,17 +2,17 @@
     "levels": [
         {
             "name": "dungeon_1",
-            "background": "images/backgrounds/castle.png",
+            "background": "images/backgrounds/castl.png",
             "tileset": "images/backgrounds/tileset1.png",
             "tile_w": 16,
             "tile_h": 16,
-            "width": 75,
-            "height": 45,
+            "width": 150,
+            "height": 90,
             "border_only": 1
         },
         {
             "name": "dungeon_2",
-            "background": "images/backgrounds/castle.png",
+            "background": "images/backgrounds/castl.png",
             "tileset": "images/backgrounds/tileset1.png",
             "tile_w": 16,
             "tile_h": 16,

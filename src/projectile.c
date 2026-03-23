@@ -3,8 +3,8 @@
 #include "projectile.h"
 #include "level.h"
 
-void projectile_think(Entity *self);
-void projectile_update(Entity *self);
+void projectile_think(Entity *self, float dt);
+void projectile_update(Entity *self, float dt);
 void projectile_free(Entity *self);
 
 Entity *projectile_new(GFC_Vector2D position, GFC_Vector2D direction, float speed, int damage, Uint8 faction)
@@ -46,19 +46,21 @@ Entity *projectile_new(GFC_Vector2D position, GFC_Vector2D direction, float spee
     return self;
 }
 
-void projectile_think(Entity *self)
+void projectile_think(Entity *self, float dt)
 {
     if(!self) return;
     // nothing needed — velocity is set at spawn
+    (void)dt;
 }
 
-void projectile_update(Entity *self)
+void projectile_update(Entity *self, float dt)
 {
     ProjectileData *data;
     if(!self) return;
 
     // move
-    gfc_vector2d_add(self->position, self->position, self->velocity);
+    self->position.x += self->velocity.x * dt * 60.0f;
+    self->position.y += self->velocity.y * dt * 60.0f;
 
     // despawn on wall hit
     if(gCurrentLevel && level_get_tile_at(gCurrentLevel, self->position.x, self->position.y))
@@ -71,7 +73,7 @@ void projectile_update(Entity *self)
     data = (ProjectileData*)self->data;
     if(data)
     {
-        data->time_alive += 0.016f;
+        data->time_alive += dt;
         if(data->time_alive >= data->lifetime)
             self->_delete_me = 1;
     }

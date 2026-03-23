@@ -24,14 +24,16 @@ typedef struct Entity_S
     int health;
     int max_health;
     int damage;             // contact/projectile damage dealt
-    int invincible_frames;  // i-frame countdown (ticks down each frame)
+    int armor;              // flat damage reduction per hit received (0 = no reduction)
+    float invincible_timer; // i-frame countdown in SECONDS (ticks down each frame)
     Uint8 faction;          // 0 = player/friendly, 1 = enemy
     Uint8 is_projectile;    // despawns on hitting opposite faction entity
     float hit_radius;       // collision circle radius in pixels
 
-	void (*think)(struct Entity_S* self);
-	void (*update)(struct Entity_S *self);
+	void (*think)(struct Entity_S* self, float dt);
+	void (*update)(struct Entity_S *self, float dt);
 	void (*free)(struct Entity_S* self);
+    void (*draw)(struct Entity_S *self); 
     void *data;
 } Entity;
 
@@ -61,12 +63,12 @@ void entity_free(Entity *self);
 /*
 * @brief run the think functions of all the entities 
 */
-void entity_system_think();
+void entity_system_think(float dt);
 
 /*
 * @brief run the update functions of all the entities 
 */
-void entity_system_update();
+void entity_system_update(float dt);
 
 /*
 * @brief run the draw functions of all the entities 
@@ -77,12 +79,73 @@ void entity_system_draw();
 @brief checks 4 points around entity, pushes back out of walls undoing movement actions before draw call
 @param self entity to chekc collisions with environment
 @param Level current game world 
+@param dt delta time in seconds
 */
-void entity_resolve_tile_collision(Entity *self, Level *level);
+void entity_resolve_tile_collision(Entity *self, Level *level, float dt);
 
 /*
 @brief check all active entities against each other, apply damage on faction mismatch, despawn projectiles on hit
+@param dt delta time in seconds
 */
-void entity_system_check_collisions();
+void entity_system_check_collisions(float dt);
+
+/*
+@brief deal damage once to all active entities of the opposing faction whose hitbox overlaps
+       an oriented rectangle. Used for melee abilities.
+@param center world-space center of the rectangle
+@param dir normalized forward direction of the rectangle
+@param half_reach half-length along dir
+@param half_width half-length perpendicular to dir
+@param damage damage to apply per hit
+@param attacking_faction entities of the OPPOSITE faction get hit
+@param iframes invincibility frames to set on hit targets
+*/
+void entity_damage_in_rect(GFC_Vector2D center, GFC_Vector2D dir,
+                           float half_reach, float half_width,
+                           int damage, Uint8 attacking_faction, float iframes);
+
+/*
+@brief deal damage once to all active entities of the opposing faction within a circle.
+       Used for AOE abilities (blizzard, caster spells).
+@param center world-space center of the circle
+@param radius radius in pixels
+@param damage damage to apply per hit
+@param attacking_faction entities of the OPPOSITE faction get hit
+@param iframes invincibility seconds to set on hit targets
+*/
+void entity_damage_in_circle(GFC_Vector2D center, float radius,
+                             int damage, Uint8 attacking_faction, float iframes);
+
+/** heals all in-use entities of the given faction within the circle, capped at max_health */
+void entity_heal_in_circle(GFC_Vector2D center, float radius,
+                           int heal_amount, Uint8 faction);
+
+/** burn damage: bypasses armor and ignores iframes so every tick always lands */
+void entity_burn_in_circle(GFC_Vector2D center, float radius,
+                           int damage, Uint8 attacking_faction);
+
+/**
+ * @brief heal all in-use entities of the given faction within a circle
+ * @param center      world-space center of the area
+ * @param radius      radius in pixels
+ * @param heal_amount HP restored per call (capped at max_health)
+ * @param faction     only entities matching this faction are healed
+ */
+void entity_heal_in_circle(GFC_Vector2D center, float radius,
+                           int heal_amount, Uint8 faction);
+
+/*
+@brief push all active enemies of the opposing faction that overlap an oriented rectangle
+       directly along the forward direction by 'force' pixels. Used for knockback effects.
+@param center world-space center of the rectangle
+@param dir normalized forward direction
+@param half_reach half-length along dir
+@param half_width half-length perpendicular to dir
+@param force pixels to push each hit enemy along dir
+@param attacking_faction entities of the OPPOSITE faction get knocked back
+*/
+void entity_knockback_in_rect(GFC_Vector2D center, GFC_Vector2D dir,
+                              float half_reach, float half_width,
+                              float force, Uint8 attacking_faction);
 
 #endif
