@@ -177,7 +177,7 @@ void monster_think(Entity *self, float dt)
     // all other behaviors face the player
     self->rotation = atan2f(dy, dx) * (180.0f / 3.14159f);
 
-    // --- MELEE: just chase ---
+    //MELEE: just chase
     if(strcmp(data->behavior, "melee") == 0)
     {
         dir = gfc_vector2d(dx, dy);
@@ -186,7 +186,7 @@ void monster_think(Entity *self, float dt)
         return;
     }
 
-    // --- RANGED: keep ~180px distance, shoot on cooldown ---
+    // RANGED: keep distance, shoot on cooldown
     if(strcmp(data->behavior, "ranged") == 0)
     {
         float preferred = 180.0f;
@@ -268,7 +268,7 @@ void monster_think(Entity *self, float dt)
         return;
     }
 
-    // --- CASTER: keep distance, lob slow heavy shot ---
+    // CASTER: keep distance, lob slow heavy shot 
     if(strcmp(data->behavior, "caster") == 0)
     {
         float preferred = 220.0f;
@@ -306,6 +306,10 @@ void monster_think(Entity *self, float dt)
         }
         return;
     }
+    if(strcmp(data->behavior, "miniboss")==0)
+    {
+        return;
+    }
 
     // default fallback — plain melee
     dir = gfc_vector2d(dx, dy);
@@ -324,14 +328,6 @@ void monster_update(Entity *self, float dt)
     self->position.x += self->velocity.x * dt * 60.0f;
     self->position.y += self->velocity.y * dt * 60.0f;
     entity_resolve_tile_collision(self, gCurrentLevel, dt);
-
-    data = (MonsterData*)self->data;
-    if (data)
-    {
-        data->time_alive += dt;
-        if (data->time_alive >= data->lifetime)
-            self->_delete_me = 1;
-    }
 }
 
 void monster_free(Entity *self)

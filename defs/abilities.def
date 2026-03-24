@@ -72,7 +72,7 @@
         },
         {
             "name": "fire_blast",
-            "sprite": "images/pointer.png",
+            "sprite": "images/Fireball1.png",
             "sprite_w": 32,
             "sprite_h": 32,
             "sprite_frames": 16,

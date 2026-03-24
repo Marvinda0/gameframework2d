@@ -69,6 +69,10 @@ int main(int argc, char * argv[])
     monster_new(Player, "charger");
     monster_new(Player, "caster");
     monster_new(Player, "spinner");
+    monster_new(Player, "miniboss");
+    monster_new(Player, "miniboss");
+    monster_new(Player, "miniboss");
+    monster_new(Player, "miniboss");
     slog("press [escape] to quit");
     // main game loop
     while(!done)
