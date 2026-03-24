@@ -1,14 +1,17 @@
 #include <math.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "simple_logger.h"
 
 #include "monster.h"
+#include "player.h"
 #include "defs.h"
 #include "projectile.h"
 #include "aoe_spell.h"
 #include "gfc_input.h"
 #include "level.h"
+#include "profile.h"
 
 void monster_think(Entity *self, float dt);
 void monster_update(Entity *self, float dt);
@@ -25,6 +28,8 @@ void monster_init_data(MonsterData *data, Entity *target)
     data->charge_state  = CHARGER_APPROACH;
     data->charge_timer  = 0;
     data->charge_dir    = gfc_vector2d(0,0);
+    data->gold_reward   = 0;
+    data->gold_chance   = 0.0f;
     strncpy(data->behavior, "melee", sizeof(data->behavior) - 1);
 }
 
@@ -81,8 +86,11 @@ Entity *monster_new(Entity *target, const char *type)
     // lifetime and speed from def
     if(def)
     {
-        ((MonsterData*)self->data)->lifetime = def->lifetime;
-        ((MonsterData*)self->data)->speed    = def->speed;
+        ((MonsterData*)self->data)->lifetime  = def->lifetime;
+        ((MonsterData*)self->data)->speed      = def->speed;
+        ((MonsterData*)self->data)->xp_reward  = def->xp_reward;
+        ((MonsterData*)self->data)->gold_reward = def->gold_reward;
+        ((MonsterData*)self->data)->gold_chance = def->gold_chance;
         strncpy(((MonsterData*)self->data)->behavior, def->behavior,
                 sizeof(((MonsterData*)self->data)->behavior) - 1);
         // spinner needs a random wander direction from the start
@@ -144,7 +152,7 @@ void monster_think(Entity *self, float dt)
                 {
                     float rad = shoot_angles[k] * (3.14159f / 180.0f);
                     GFC_Vector2D shot_dir = gfc_vector2d(cosf(rad), sinf(rad));
-                    projectile_new_from_ability(self->position, shot_dir, adef, self->faction);
+                    projectile_new_from_ability(self->position, shot_dir, adef, self->faction, -1, 0.0f, 0.0f, 0.0f);
                 }
                 data->charge_timer = 0.667f; // brief pause after firing (~40 frames)
             }
@@ -199,9 +207,10 @@ void monster_think(Entity *self, float dt)
                 dx + gfc_crandom() * spread,
                 dy + gfc_crandom() * spread);
             adef = defs_get_ability("enemy_shot");
-            projectile_new_from_ability(self->position, shot_dir, adef, self->faction);
+            projectile_new_from_ability(self->position, shot_dir, adef, self->faction, -1, 0.0f, 0.0f, 0.0f);
             data->shoot_cooldown = adef ? adef->cooldown / 60.0f : 1.5f; // def cooldown is in frames
         }
+
         return;
     }
 
@@ -280,7 +289,7 @@ void monster_think(Entity *self, float dt)
                 dx + gfc_crandom() * spread,
                 dy + gfc_crandom() * spread);
             adef = defs_get_ability("enemy_aoe_shot");
-            projectile_new_from_ability(self->position, shot_dir, adef, self->faction);
+            projectile_new_from_ability(self->position, shot_dir, adef, self->faction, -1, 0.0f, 0.0f, 0.0f);
             data->shoot_cooldown = adef ? adef->cooldown / 60.0f : 2.5f;
         }
         if(data->aoe_cooldown > 0) { data->aoe_cooldown -= dt; }
@@ -327,8 +336,27 @@ void monster_update(Entity *self, float dt)
 
 void monster_free(Entity *self)
 {
+    MonsterData *data;
     if(!self)return;
+    data = (MonsterData*)self->data;
+    /* health reached 0 means killed — award XP and possibly gold */
+    if(self->health <= 0 && data && data->target)
+    {
+        /* XP gain — scaled by permanent XP bonus upgrade */
+        int xp = (int)(data->xp_reward
+                       * (1.0f + profile_get_upgrade(PERM_XP_BONUS) * PERM_XP_MULT));
+        player_give_xp(data->target, xp);
 
+        /* gold drop — roll chance from def */
+        if(data->gold_reward > 0 && data->gold_chance > 0.0f)
+        {
+            if((float)rand() / (float)RAND_MAX < data->gold_chance)
+            {
+                profile_add_gold(data->gold_reward);
+                slog("gold drop: +%dg  (total: %dg)", data->gold_reward, profile_get_gold());
+            }
+        }
+    }
     if(self->data)
     {
         free(self->data);

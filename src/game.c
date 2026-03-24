@@ -14,6 +14,7 @@
 #include "camera.h"
 #include "hud.h"
 #include "hud_text.h"
+#include "profile.h"
 
 int main(int argc, char * argv[])
 {
@@ -51,6 +52,7 @@ int main(int argc, char * argv[])
     entity_system_init(1024);
     /*demo setup*/
     defs_load_all(); // load enemies.def and abilities.def
+    profile_load();  // load persistent gold + upgrade levels
     Player = player_new();
 
     //LEVEL
@@ -80,19 +82,35 @@ int main(int argc, char * argv[])
         SDL_GetMouseState(&mx,&my);
         mf += 6.0f * dt; // 6 frames/s for mouse cursor animation
         if (mf >= 16.0)mf = 0;
-        
+
+        /* process shop key input before entity think so the shop-open flag
+           is set before player_think checks hud_shop_is_open() */
+        hud_shop_update(Player);
+
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first            
             // Entities
             level_draw(level);
-            entity_system_think(dt);
-            entity_system_update(dt);
-            entity_system_check_collisions(dt);
+            if(!hud_shop_is_open())
+            {
+                entity_system_think(dt);
+                entity_system_update(dt);
+                entity_system_check_collisions(dt);
+                if(entity_consume_crit()) hud_trigger_crit_flash();
+                {
+                    int _heal = entity_consume_lifesteal_heal();
+                    if(_heal > 0)
+                    {
+                        Player->health += _heal;
+                        if(Player->health > Player->max_health) Player->health = Player->max_health;
+                    }
+                }
+            }
             entity_system_draw();
 
             //UI elements last
-            hud_draw(Player);
+            hud_draw(Player, dt);
             gf2d_sprite_draw(
                 mouse,
                 gfc_vector2d(mx,my),
@@ -109,6 +127,7 @@ int main(int argc, char * argv[])
         if (gfc_input_command_pressed("stats_menu")) hud_toggle_stats();
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
+    profile_save(); // final flush before exit
     level_free(level);
     hud_text_free();
     slog("---==== END ====---");

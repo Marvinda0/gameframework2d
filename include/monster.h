@@ -26,6 +26,9 @@ typedef struct
     char  behavior[32];     // "melee", "ranged", "charger", "caster"
     float shoot_cooldown;   // seconds until next shot (ranged/caster)
     float aoe_cooldown;     // seconds until next AOE drop (caster only)
+    int   xp_reward;        // XP to give the player on kill
+    int   gold_reward;      // gold to drop on kill (if chance roll passes)
+    float gold_chance;      // 0.0–1.0 probability of dropping gold
     /* charger only */
     int   charge_state;     // CHARGER_* enum above
     float charge_timer;     // seconds remaining in current state

@@ -69,8 +69,9 @@ void sword_think(Entity *self, float dt)
     // deal damage once on the very first frame
     entity_damage_in_rect(
         self->position, data->direction,
-        SWORD_HALF_REACH, SWORD_HALF_WIDTH, // TODO(def): replace with def->hit_radius, derived width
-        data->damage, self->faction, 0.5f); // 0.5s i-frames
+        SWORD_HALF_REACH, SWORD_HALF_WIDTH,
+        data->damage, self->faction, 0.5f,
+        self->crit_chance, self->crit_dmg_mult, self->lifesteal);
     data->damage_dealt = 1;
 }
 

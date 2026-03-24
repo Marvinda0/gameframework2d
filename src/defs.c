@@ -56,6 +56,10 @@ static void defs_load_enemies(const char *filename)
         sj_object_get_value_as_float(item, "speed",         &def->speed);
         sj_object_get_value_as_float(item, "hit_radius",    &def->hit_radius);
         sj_object_get_value_as_float(item, "lifetime",      &def->lifetime);
+        sj_object_get_value_as_int(item,   "xp_reward",     &def->xp_reward);
+        def->gold_chance = 0.6f; /* default if not specified in def */
+        sj_object_get_value_as_int(item,   "gold_reward",   &def->gold_reward);
+        sj_object_get_value_as_float(item, "gold_chance",   &def->gold_chance);
         str = sj_object_get_value_as_string(item, "color");
         if(str) strncpy(def->color_name, str, sizeof(GFC_TextLine) - 1);
         else    strncpy(def->color_name, "white", sizeof(GFC_TextLine) - 1);

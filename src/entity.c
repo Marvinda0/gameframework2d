@@ -14,6 +14,23 @@ typedef struct
 
 static EntityManager _entity_manager = {0};
 
+static int _crit_pending = 0; // set to 1 when a crit lands; consumed by entity_consume_crit()
+static int _pending_heal  = 0; // accumulated lifesteal HP; consumed by entity_consume_lifesteal_heal()
+
+int entity_consume_crit(void)
+{
+    int r = _crit_pending;
+    _crit_pending = 0;
+    return r;
+}
+
+int entity_consume_lifesteal_heal(void)
+{
+    int r = _pending_heal;
+    _pending_heal = 0;
+    return r;
+}
+
 void entity_system_close();
 
 void entity_system_init(Uint32 max)
@@ -212,7 +229,8 @@ static int entity_apply_armor(int raw, int armor)
 
 void entity_damage_in_rect(GFC_Vector2D center, GFC_Vector2D dir,
                            float half_reach, float half_width,
-                           int damage, Uint8 attacking_faction, float iframes)
+                           int damage, Uint8 attacking_faction, float iframes,
+                           float crit_chance, float crit_dmg_mult, float lifesteal)
 {
     int i;
     Entity *e;
@@ -238,9 +256,23 @@ void entity_damage_in_rect(GFC_Vector2D center, GFC_Vector2D dir,
         if(along >  (half_reach + r) || along < -(half_reach + r)) continue;
         if(side  >  (half_width + r) || side  < -(half_width + r)) continue;
 
-        e->health -= entity_apply_armor(damage, e->armor);
+        // roll crit on hit
+        int final_dmg = damage;
+        if(crit_chance > 0.0f && ((float)rand() / (float)RAND_MAX) < crit_chance)
+        {
+            float mult = (crit_dmg_mult > 0.0f) ? crit_dmg_mult : 1.5f;
+            final_dmg = (int)(damage * mult);
+            _crit_pending = 1;
+            slog("CRIT! melee base=%d final=%d crit_chance=%.2f", damage, final_dmg, crit_chance);
+        }
+
+        {
+            int _actual = entity_apply_armor(final_dmg, e->armor);
+            e->health -= _actual;
+            if(lifesteal > 0.0f) _pending_heal += (int)((float)_actual * lifesteal);
+        }
         e->invincible_timer = iframes; // seconds
-        if(e->health <= 0) e->_delete_me = 1;
+        if(e->health <= 0 && e->faction != 0) e->_delete_me = 1;
     }
 }
 void entity_damage_in_circle(GFC_Vector2D center, float radius,
@@ -267,7 +299,7 @@ void entity_damage_in_circle(GFC_Vector2D center, float radius,
 
         e->health -= entity_apply_armor(damage, e->armor);
         e->invincible_timer = iframes;
-        if(e->health <= 0) e->_delete_me = 1;
+        if(e->health <= 0 && e->faction != 0) e->_delete_me = 1;
     }
 }
 
@@ -321,7 +353,7 @@ void entity_burn_in_circle(GFC_Vector2D center, float radius,
         if(dist_sq > max_dist * max_dist) continue;
 
         e->health -= damage;  // no armor reduction
-        if(e->health <= 0) e->_delete_me = 1;
+        if(e->health <= 0 && e->faction != 0) e->_delete_me = 1;
     }
 }
 
@@ -383,19 +415,45 @@ void entity_system_check_collisions(float dt)
             dist = gfc_vector2d_magnitude_between(a->position, b->position);
             if(dist > (a->hit_radius + b->hit_radius)) continue;
 
-            // apply damage to a from b
+            // apply damage to a from b — roll crit if b is a player attack
             if(a->invincible_timer <= 0 && b->damage > 0)
             {
-                a->health -= entity_apply_armor(b->damage, a->armor);
+                int final_dmg_b = b->damage;
+                if(b->faction == 0 && b->crit_chance > 0.0f &&
+                   ((float)rand() / (float)RAND_MAX) < b->crit_chance)
+                {
+                    float mult = (b->crit_dmg_mult > 0.0f) ? b->crit_dmg_mult : 1.5f;
+                    final_dmg_b = (int)(final_dmg_b * mult);
+                    _crit_pending = 1;
+                    slog("CRIT! proj base=%d final=%d crit_chance=%.2f", b->damage, final_dmg_b, b->crit_chance);
+                }
+                {
+                    int _actual_b = entity_apply_armor(final_dmg_b, a->armor);
+                    a->health -= _actual_b;
+                    if(b->lifesteal > 0.0f) _pending_heal += (int)((float)_actual_b * b->lifesteal);
+                }
                 a->invincible_timer = 0.833f; // ~50 frames at 60fps
-                if(a->health <= 0) a->_delete_me = 1;
+                if(a->health <= 0 && a->faction != 0) a->_delete_me = 1;
             }
-            // apply damage to b from a
+            // apply damage to b from a — roll crit if a is a player attack
             if(b->invincible_timer <= 0 && a->damage > 0)
             {
-                b->health -= entity_apply_armor(a->damage, b->armor);
+                int final_dmg_a = a->damage;
+                if(a->faction == 0 && a->crit_chance > 0.0f &&
+                   ((float)rand() / (float)RAND_MAX) < a->crit_chance)
+                {
+                    float mult = (a->crit_dmg_mult > 0.0f) ? a->crit_dmg_mult : 1.5f;
+                    final_dmg_a = (int)(final_dmg_a * mult);
+                    _crit_pending = 1;
+                    slog("CRIT! proj base=%d final=%d crit_chance=%.2f", a->damage, final_dmg_a, a->crit_chance);
+                }
+                {
+                    int _actual_a = entity_apply_armor(final_dmg_a, b->armor);
+                    b->health -= _actual_a;
+                    if(a->lifesteal > 0.0f) _pending_heal += (int)((float)_actual_a * a->lifesteal);
+                }
                 b->invincible_timer = 0.5f;   // ~30 frames at 60fps
-                if(b->health <= 0) b->_delete_me = 1;
+                if(b->health <= 0 && b->faction != 0) b->_delete_me = 1;
             }
 
             // projectiles despawn on contact

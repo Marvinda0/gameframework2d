@@ -17,7 +17,9 @@ Entity *projectile_new(GFC_Vector2D position, GFC_Vector2D direction, float spee
 
 /*
 @brief spawn a projectile using an AbilityDef — all values come from the def file
+       pass override_damage >= 0 to replace def->damage (e.g. for damage scaling)
+       pass crit_chance > 0 so the collision system rolls crit at hit time
 */
-Entity *projectile_new_from_ability(GFC_Vector2D position, GFC_Vector2D direction, AbilityDef *def, Uint8 faction);
+Entity *projectile_new_from_ability(GFC_Vector2D position, GFC_Vector2D direction, AbilityDef *def, Uint8 faction, int override_damage, float crit_chance, float crit_dmg_mult, float lifesteal);
 
 #endif

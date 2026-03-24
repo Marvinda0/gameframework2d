@@ -29,6 +29,9 @@ typedef struct Entity_S
     Uint8 faction;          // 0 = player/friendly, 1 = enemy
     Uint8 is_projectile;    // despawns on hitting opposite faction entity
     float hit_radius;       // collision circle radius in pixels
+    float crit_chance;      // 0.0-1.0 probability of a crit (0 = never crits)
+    float crit_dmg_mult;    // damage multiplier on crit (e.g. 2.0 = double damage)
+    float lifesteal;        // fraction of damage dealt healed back to this entity (0 = none)
 
 	void (*think)(struct Entity_S* self, float dt);
 	void (*update)(struct Entity_S *self, float dt);
@@ -102,7 +105,20 @@ void entity_system_check_collisions(float dt);
 */
 void entity_damage_in_rect(GFC_Vector2D center, GFC_Vector2D dir,
                            float half_reach, float half_width,
-                           int damage, Uint8 attacking_faction, float iframes);
+                           int damage, Uint8 attacking_faction, float iframes,
+                           float crit_chance, float crit_dmg_mult, float lifesteal);
+
+/*
+@brief returns accumulated lifesteal HP since the last call (may be 0).
+       Apply to the player entity in game.c once per frame.
+*/
+int entity_consume_lifesteal_heal(void);
+
+/*
+@brief returns 1 and clears the internal flag if a crit landed since the last call.
+       Call once per frame in game.c to fire hud_trigger_crit_flash().
+*/
+int entity_consume_crit(void);
 
 /*
 @brief deal damage once to all active entities of the opposing faction within a circle.

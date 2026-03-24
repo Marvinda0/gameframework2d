@@ -23,7 +23,10 @@ typedef struct
     float hit_radius;
     float lifetime;
     GFC_TextLine behavior; // "melee", "ranged", "charger", "caster"
-    GFC_TextLine color_name; 
+    GFC_TextLine color_name;
+    int   xp_reward;      // XP given to the player on kill
+    int   gold_reward;    // gold dropped on kill (if chance roll passes)
+    float gold_chance;    // 0.0–1.0 probability of dropping gold (default 0.6)
 } EnemyDef;
 
 typedef enum

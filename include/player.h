@@ -11,12 +11,23 @@
 #define CHARGE_WINDUP  1
 #define CHARGE_DASHING 2
 
+// XP system
+#define XP_COST_PER_UPGRADE   5
+// stat upgrade caps
+#define UPGRADE_CAP_MAX_HP    2000
+#define UPGRADE_CAP_ARMOR     200
+#define UPGRADE_CAP_DMG       3.0f
+#define UPGRADE_CAP_CRIT      1.0f
+#define UPGRADE_CAP_MS        12.0f
+#define UPGRADE_CAP_ASPD      10.0f
+#define UPGRADE_CAP_LS        1.5f
+
 typedef struct
 {
     GFC_TextLine className;
-    float damage_mult;      // class damage multiplier (1.0 = 100%)
+    float damage_mult;      // class damage multiplier 
     float crit;             // crit chance 0.0–1.0
-    float crit_dmg;         // crit multiplier (e.g. 1.5 = +50%)
+    float crit_dmg;         // crit multiplier 
     float lifesteal;        // fraction of damage dealt that heals the player
     float ms;               // move speed (base * class ms multiplier)
     float armor;            // kept here for display; actual armor lives on Entity
@@ -42,6 +53,12 @@ typedef struct
     int          burst_remaining;  // arrows still to fire in current burst
     float        burst_timer;      // seconds until next arrow fires
     GFC_Vector2D burst_dir;        // direction locked when burst was triggered
+
+    int          xp;  // accumulated experience points
+
+    // permanent profile bonuses (applied at class-switch, updated on purchase)
+    float        pickup_range;  // item pickup radius in pixels (base 30 + upgrades)
+    int          has_revive;    // 1 = second-chance revive available this run
 } PlayerData;
 
 
@@ -68,5 +85,19 @@ void player_draw(Entity *self);
 / @return Return a vector with x and y of the palyer
 */
 GFC_Vector2D player_get_pos();
+
+// add XP to the player (called from monster_free on kill)
+void player_give_xp(Entity *player, int amount);
+
+// spend XP_COST_PER_UPGRADE xp to upgrade one stat
+// stat_index: 0=maxHP 1=armor 2=damage 3=crit 4=ms 5=aspd 6=lifesteal
+void player_try_upgrade(Entity *player, int stat_index);
+
+/*
+/ @brief Apply permanent profile upgrade bonuses on top of current class base stats.
+/        Called automatically at the end of player_switch_class.
+/        Also call after purchasing a permanent upgrade to apply the new level.
+*/
+void player_apply_profile(Entity *self);
 
 #endif

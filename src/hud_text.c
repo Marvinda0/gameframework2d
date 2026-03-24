@@ -5,22 +5,9 @@
 #include "gf2d_graphics.h"
 #include "hud_text.h"
 
-/*
- * TTF rendering pipeline (per Professor Kehoe's notes):
- *
- *   1. TTF_Init()
- *   2. TTF_OpenFont()  → TTF_Font *
- *   3. TTF_RenderText_Blended()  → SDL_Surface *  (ARGB, anti-aliased)
- *   4. gf2d_graphics_screen_convert()  → converts surface to renderer pixel format
- *   5. SDL_CreateTextureFromSurface()  → SDL_Texture *
- *   6. SDL_RenderCopy()  → draws it
- *   7. SDL_DestroyTexture() + SDL_FreeSurface()  → free per-frame resources
- *
- * References:
- *   https://wiki.libsdl.org/SDL2_ttf/TTF_RenderText_Blended
- *   https://wiki.libsdl.org/SDL2_ttf/TTF_Init
- *   https://www.deusinmachina.net/p/sdl-tutorial-part-2-drawing-text
- */
+// TTF pipeline: TTF_Init -> TTF_OpenFont -> TTF_RenderText_Blended
+// -> SDL_CreateTextureFromSurface -> SDL_SetTextureBlendMode -> SDL_RenderCopy
+// docs: docs/hud.md
 
 static TTF_Font *_font = NULL;
 
@@ -48,19 +35,16 @@ void hud_text_draw(const char *text, int x, int y, GFC_Color color)
 
     if(!_font || !text || text[0] == '\0') return;
 
-    /* gfc_color8 stores channels as raw 0-255 floats (not 0.0-1.0 normalized) */
+    // gfc_color8 stores 0-255 floats, cast directly — do NOT multiply by 255
     sdl_col.r = (Uint8)(color.r);
     sdl_col.g = (Uint8)(color.g);
     sdl_col.b = (Uint8)(color.b);
     sdl_col.a = (Uint8)(color.a);
 
-    /* TTF_RenderText_Blended → ARGB8888 surface with proper alpha */
     surf = TTF_RenderText_Blended(_font, text, sdl_col);
     if(!surf) return;
 
-    /* Upload directly to GPU — skip gf2d_graphics_screen_convert because
-     * the screen surface format typically has no alpha channel, which would
-     * strip the transparency and make the text invisible.                   */
+    // skip gf2d_graphics_screen_convert — it strips alpha and makes text invisible
     rend = gf2d_graphics_get_renderer();
     if(!rend) { SDL_FreeSurface(surf); return; }
 
@@ -68,7 +52,7 @@ void hud_text_draw(const char *text, int x, int y, GFC_Color color)
     SDL_FreeSurface(surf);
     if(!tex) return;
 
-    /* Must enable alpha blending on the texture or text renders as a solid block */
+    // blend mode required or the text renders as a solid block
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
 
     dst.x = x;
@@ -88,4 +72,3 @@ void hud_text_free(void)
     }
     TTF_Quit();
 }
-/*eol@eof*/

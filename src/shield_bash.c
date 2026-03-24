@@ -70,7 +70,8 @@ void bash_think(Entity *self, float dt)
     entity_damage_in_rect(
         self->position, data->direction,
         BASH_HALF_SIZE, BASH_HALF_SIZE,
-        data->damage, self->faction, 0.333f); // 0.333s i-frames
+        data->damage, self->faction, 0.333f,
+        self->crit_chance, self->crit_dmg_mult, self->lifesteal);
 
     entity_knockback_in_rect(
         self->position, data->direction,

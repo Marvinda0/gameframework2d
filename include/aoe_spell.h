@@ -5,10 +5,9 @@
 #include "defs.h"
 
 /*
-@brief Spawn a persistent AOE circle that deals damage every 0.5s until it expires.
-       Used for player spells (blizzard) and caster enemy abilities.
+@brief Spawn a persistent AOE circle that deals damage every tick until it expires.
 @param position  world-space center of the AOE
-@param def       ability def — reads aoe_radius and lifetime
+@param def       ability def file
 @param faction   attacking faction (0=player hits enemies, 1=enemy hits player)
 @param damage    pre-calculated damage per tick (already through player_calc_dmg)
 @return pointer to the AOE entity, or NULL on error

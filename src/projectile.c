@@ -90,7 +90,7 @@ void projectile_free(Entity *self)
 }
 
 // spawn a projectile from an AbilityDef — sprite, damage, speed, lifetime all from JSON
-Entity *projectile_new_from_ability(GFC_Vector2D position, GFC_Vector2D direction, AbilityDef *def, Uint8 faction)
+Entity *projectile_new_from_ability(GFC_Vector2D position, GFC_Vector2D direction, AbilityDef *def, Uint8 faction, int override_damage, float crit_chance, float crit_dmg_mult, float lifesteal)
 {
     Entity *self;
     ProjectileData *data;
@@ -110,9 +110,12 @@ Entity *projectile_new_from_ability(GFC_Vector2D position, GFC_Vector2D directio
 
     self->faction       = faction;
     self->is_projectile = 1;
-    self->damage        = def->damage;
+    self->damage        = (override_damage >= 0) ? override_damage : def->damage;
     self->health        = 1;
     self->hit_radius    = def->hit_radius;
+    self->crit_chance   = crit_chance;
+    self->crit_dmg_mult = crit_dmg_mult;
+    self->lifesteal     = lifesteal;
 
     self->think  = projectile_think;
     self->update = projectile_update;
