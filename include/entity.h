@@ -23,21 +23,21 @@ typedef struct Entity_S
     // combat
     int health;
     int max_health;
-    int damage;             // contact/projectile damage dealt
+    int damage;             
     int armor;              // flat damage reduction per hit received (0 = no reduction)
     float invincible_timer; // i-frame countdown in SECONDS (ticks down each frame)
     Uint8 faction;          // 0 = player/friendly, 1 = enemy
     Uint8 is_projectile;    // despawns on hitting opposite faction entity
     float hit_radius;       // collision circle radius in pixels
-    float crit_chance;      // 0.0-1.0 probability of a crit (0 = never crits)
-    float crit_dmg_mult;    // damage multiplier on crit (e.g. 2.0 = double damage)
-    float lifesteal;        // fraction of damage dealt healed back to this entity (0 = none)
+    float crit_chance;      // 0.0-1.0 probability of a crit 
+    float crit_dmg_mult;    // damage multiplier on crit 
+    float lifesteal;        // fraction of damage dealt healed back to this entity 
 
-	void (*think)(struct Entity_S* self, float dt);
+       void (*think)(struct Entity_S* self, float dt);
 	void (*update)(struct Entity_S *self, float dt);
 	void (*free)(struct Entity_S* self);
-    void (*draw)(struct Entity_S *self); 
-    void *data;
+       void (*draw)(struct Entity_S *self); 
+       void *data;
 } Entity;
 
 /*

@@ -42,10 +42,10 @@ typedef enum
 
 typedef enum
 {
-    AOE_EFFECT_DAMAGE    = 0,  // deals damage 
-    AOE_EFFECT_HEAL      = 1,  // heals allies 
-    AOE_EFFECT_BURN      = 2,  // fire damage 
-    AOE_EFFECT_SLOW_ZONE = 3,  // slows enemies 
+    AOE_EFFECT_DAMAGE    = 0,  
+    AOE_EFFECT_HEAL      = 1, 
+    AOE_EFFECT_BURN      = 2,  
+    AOE_EFFECT_SLOW_ZONE = 3,  // not using right now
 } AoeEffect;
 
 // loaded from abilities.def

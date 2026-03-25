@@ -58,7 +58,7 @@
         },
         {
             "name": "ice_lance",
-            "sprite": "images/pointer.png",
+            "sprite": "images/icelance2.png",
             "sprite_w": 32,
             "sprite_h": 32,
             "sprite_frames": 16,
@@ -72,7 +72,7 @@
         },
         {
             "name": "fire_blast",
-            "sprite": "images/Fireball1.png",
+            "sprite": "images/Fireball2.png",
             "sprite_w": 32,
             "sprite_h": 32,
             "sprite_frames": 16,
@@ -101,7 +101,7 @@
         },
         {
             "name": "arrow_shot",
-            "sprite": "images/pointer.png",
+            "sprite": "images/arrow1.png",
             "sprite_w": 32,
             "sprite_h": 32,
             "sprite_frames": 16,
@@ -115,7 +115,7 @@
         },
         {
             "name": "barrage",
-            "sprite": "images/pointer.png",
+            "sprite": "images/arrow1.png",
             "sprite_w": 32,
             "sprite_h": 32,
             "sprite_frames": 16,
@@ -129,7 +129,7 @@
         },
         {
             "name": "roll",
-            "sprite": "images/pointer.png",
+            "sprite": "",
             "sprite_w": 32,
             "sprite_h": 32,
             "sprite_frames": 1,
@@ -143,7 +143,7 @@
         },
         {
             "name": "blink",
-            "sprite": "images/pointer.png",
+            "sprite": "",
             "sprite_w": 32,
             "sprite_h": 32,
             "sprite_frames": 1,

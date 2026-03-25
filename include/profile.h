@@ -1,26 +1,18 @@
 #ifndef __PROFILE_H__
 #define __PROFILE_H__
 
-/*
- * profile.h — persistent player profile (gold + permanent upgrades)
- *
- * Saved to profile.cfg in the working directory as JSON.
- * Loaded once at startup, auto-saved whenever gold or upgrades change.
- */
-
-/* permanent upgrade slot indices */
-#define PERM_SPEED      0   /* Move Speed    – max 5 tiers, 100g/tier  +0.25 ms       */
-#define PERM_LIFESTEAL  1   /* Lifesteal     – max 3 tiers, 100g/tier  +2% lifesteal  */
-#define PERM_HP         2   /* Max HP        – max 5 tiers, 150g/tier  +100 HP        */
-#define PERM_XP_BONUS   3   /* XP Bonus      – max 3 tiers, 200g/tier  +25% XP gain  */
-#define PERM_REVIVE     4   /* Second Chance – max 3, 500g each,  +1 revive per run  */
+#define PERM_SPEED      0   
+#define PERM_LIFESTEAL  1   
+#define PERM_HP         2   
+#define PERM_XP_BONUS   3   
+#define PERM_REVIVE     4   
 #define PERM_COUNT      5
 
 /* per-level delta applied to the live player entity */
-#define PERM_SPEED_BONUS      0.25f   /* ms added per speed level              */
-#define PERM_LIFESTEAL_BONUS  0.02f   /* lifesteal fraction added per level    */
-#define PERM_HP_BONUS        100      /* max HP added per level                */
-#define PERM_XP_MULT          0.25f   /* XP multiplier fraction added per lv  */
+#define PERM_SPEED_BONUS      0.25f   
+#define PERM_LIFESTEAL_BONUS  0.02f   
+#define PERM_HP_BONUS        100      
+#define PERM_XP_MULT          0.25f   
 
 /*
  * @brief Load profile.cfg into memory.
@@ -56,7 +48,7 @@ int  profile_upgrade_cost(int idx);
 
 /*
  * @brief Attempt to purchase one level of upgrade idx.
- * @return 1 if purchased, 0 if already maxed or insufficient gold.
+ * @return 1 if purchased, 0 if already maxed or not enough gold.
  *         On success the profile is auto-saved.
  */
 int  profile_buy_upgrade(int idx);
